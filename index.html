@@ -5,131 +5,357 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Satellite Tracker</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #00b4d8;
+            --accent-hover: #48cae4;
+            --danger: #e63946;
+            --success: #2a9d8f;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
             margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+        
         .container {
-            max-width: 800px;
+            max-width: 1100px;
             margin: 0 auto;
-            background-color: white;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        h1 {
+        
+        .header {
             text-align: center;
-            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            position: relative;
         }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin: 0;
+            color: var(--text-primary);
+            display: inline-block;
+        }
+        
+        .header h1 span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+        
+        .card-header h2 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin: 0;
+            color: var(--text-primary);
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
         select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
+            padding: 12px 15px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            appearance: none;
             cursor: pointer;
-            font-size: 16px;
-            display: block;
-            margin: 0 auto;
+            transition: var(--transition);
         }
+        
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+        
+        button {
+            background-color: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
         button:hover {
-            background-color: #45a049;
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
         #map {
             height: 400px;
-            margin: 20px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
-        .position-data {
-            background-color: #f9f9f9;
+        
+        .map-container {
+            position: relative;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .data-item {
             padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-top: 20px;
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            transition: var(--transition);
         }
-        .position-data h2 {
-            margin-top: 0;
-            color: #333;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
+        
+        .data-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .data-row {
-            display: flex;
-            padding: 8px 0;
-        }
+        
         .data-label {
-            font-weight: bold;
-            width: 120px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .loading {
-            text-align: center;
-            margin: 20px 0;
-            font-style: italic;
-            color: #666;
+        
+        .data-value {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-primary);
         }
+        
         #status-message {
             text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
+            margin: 15px 0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
         }
+        
+        #status-message.visible {
+            opacity: 1;
+            height: auto;
+            margin: 15px 0;
+            padding: 10px 15px;
+        }
+        
         .success {
-            background-color: #dff0d8;
-            color: #3c763d;
+            background-color: rgba(42, 157, 143, 0.15);
+            color: var(--success);
+            border-left: 4px solid var(--success);
         }
+        
         .error {
-            background-color: #f2dede;
-            color: #a94442;
+            background-color: rgba(230, 57, 70, 0.15);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+        
+        .info {
+            background-color: rgba(0, 180, 216, 0.15);
+            color: var(--accent);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success);
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(42, 157, 143, 0.7);
+            }
+            
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(42, 157, 143, 0);
+            }
+            
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(42, 157, 143, 0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .satellite-icon {
+            display: inline-block;
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Custom leaflet styling for dark theme */
+        .leaflet-container {
+            background-color: #1a1a1a !important;
+        }
+        
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Satellite Tracker</h1>
+        <div class="header">
+            <h1><span>Satellite</span> Tracker</h1>
+            <div id="live-indicator" class="pulse" style="display: none;"></div>
+        </div>
         
-        <div id="satellite-selection">
-            <h2>Select Satellite</h2>
-            <select id="satellite-select">
-                <option value="">Loading satellites...</option>
-            </select>
-            <button id="track-button">Track Satellite</button>
+        <div class="card">
+            <div class="card-header">
+                <svg class="satellite-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <h2>Select Satellite</h2>
+            </div>
+            <div class="card-body">
+                <select id="satellite-select">
+                    <option value="">Loading satellites...</option>
+                </select>
+                <button id="track-button">
+                    <span id="button-text">Track Satellite</span>
+                </button>
+            </div>
         </div>
         
         <div id="status-message"></div>
         
-        <div id="map"></div>
+        <div class="card map-container">
+            <div class="card-header">
+                <svg class="satellite-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    <path d="M2 12h20"></path>
+                </svg>
+                <h2>Live Tracking</h2>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div id="map"></div>
+            </div>
+        </div>
         
-        <div id="position-data" class="position-data" style="display: none;">
-            <h2>Satellite Position (Real-Time)</h2>
-            <div class="data-row">
-                <div class="data-label">Satellite:</div>
-                <div id="satellite-name"></div>
+        <div id="position-data" class="card" style="display: none;">
+            <div class="card-header">
+                <svg class="satellite-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+                <h2>Real-Time Telemetry</h2>
             </div>
-            <div class="data-row">
-                <div class="data-label">Latitude:</div>
-                <div id="latitude"></div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">Longitude:</div>
-                <div id="longitude"></div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">Altitude:</div>
-                <div id="altitude"></div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">Updated:</div>
-                <div id="updated-time"></div>
+            <div class="card-body">
+                <div class="data-grid">
+                    <div class="data-item">
+                        <div class="data-label">Satellite</div>
+                        <div id="satellite-name" class="data-value">-</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Latitude</div>
+                        <div id="latitude" class="data-value">-</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Longitude</div>
+                        <div id="longitude" class="data-value">-</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Altitude</div>
+                        <div id="altitude" class="data-value">-</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Last Update</div>
+                        <div id="updated-time" class="data-value">-</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -142,15 +368,32 @@
         // Configure the API base URL
         const API_BASE_URL = 'http://localhost:5000';  // <- Change this to match your Flask server
         
-        // Initialize map
+        // Initialize map with dark theme
         const map = L.map('map').setView([0, 0], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
         }).addTo(map);
         
         let satelliteMarker = null;
+        let satellitePath = [];
+        let pathLine = null;
         let updateInterval = null;
         const statusMessage = document.getElementById('status-message');
+        const liveIndicator = document.getElementById('live-indicator');
+        const trackButton = document.getElementById('track-button');
+        const buttonText = document.getElementById('button-text');
+        
+        // Show status message with animation
+        function showStatusMessage(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = type + ' visible';
+            
+            setTimeout(() => {
+                statusMessage.classList.add('visible');
+            }, 10);
+        }
         
         // Debug function to log network requests
         function debugFetch(url, options) {
@@ -165,161 +408,271 @@
                     throw error;
                 });
         }
-        
         // Load available satellites
-        async function loadSatellites() {
-            try {
-                statusMessage.className = '';
-                statusMessage.textContent = 'Loading satellite data...';
-                
-                // Use absolute URL instead of relative
-                const url = `${API_BASE_URL}/api/satellites`;
-                console.log(`Fetching satellites from: ${url}`);
-                
-                const response = await debugFetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                const contentType = response.headers.get('content-type');
-                console.log(`Content type: ${contentType}`);
-                
-                if (!contentType || !contentType.includes('application/json')) {
-                    // Try to get the response text for debugging
-                    const text = await response.text();
-                    console.error(`Expected JSON but got ${contentType || 'unknown content type'}`);
-                    console.error(`Response starts with: ${text.substring(0, 100)}...`);
-                    throw new Error(`Expected JSON but got ${contentType || 'unknown content type'}`);
-                }
-                
-                const data = await response.json();
-                console.log(`Received ${data.length} satellites:`, data);
-                
-                const select = document.getElementById('satellite-select');
-                select.innerHTML = '';
-                
-                // Add default option
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'Select a satellite...';
-                select.appendChild(defaultOption);
-                
-                // Add all available satellites
-                data.forEach(sat => {
-                    const option = document.createElement('option');
-                    option.value = sat;
-                    option.textContent = sat;
-                    select.appendChild(option);
-                });
-                
-                statusMessage.className = 'success';
-                statusMessage.textContent = 'Satellite data loaded successfully!';
-            } catch (error) {
-                statusMessage.className = 'error';
-                statusMessage.textContent = `Error loading satellites: ${error.message}`;
-                console.error('Error loading satellites:', error);
-            }
+async function loadSatellites() {
+    try {
+        showStatusMessage('Loading satellite data...', 'info');
+        
+        // Set loading state
+        trackButton.disabled = true;
+        buttonText.innerHTML = '<span class="loading"></span>Loading...';
+        
+        // Use absolute URL instead of relative
+        const url = `${API_BASE_URL}/api/satellites`;
+        console.log(`Fetching satellites from: ${url}`);
+        
+        const response = await debugFetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
-        // Track the selected satellite
-        async function trackSatellite() {
-            const satelliteName = document.getElementById('satellite-select').value;
-            
-            if (!satelliteName) {
-                statusMessage.className = 'error';
-                statusMessage.textContent = 'Please select a satellite to track';
-                return;
-            }
-            
-            // Clear any previous interval
-            if (updateInterval) {
-                clearInterval(updateInterval);
-            }
-            
-            statusMessage.className = '';
-            statusMessage.textContent = `Tracking ${satelliteName}...`;
-            
-            // Get initial position
-            await updatePosition(satelliteName);
-            
-            // Update every 10 seconds
-            updateInterval = setInterval(() => {
-                updatePosition(satelliteName);
-            }, 10000);
+        const contentType = response.headers.get('content-type');
+        console.log(`Content type: ${contentType}`);
+        
+        if (!contentType || !contentType.includes('application/json')) {
+            // Try to get the response text for debugging
+            const text = await response.text();
+            console.error(`Expected JSON but got ${contentType || 'unknown content type'}`);
+            console.error(`Response starts with: ${text.substring(0, 100)}...`);
+            throw new Error(`Expected JSON but got ${contentType || 'unknown content type'}`);
         }
         
-        // Update the satellite position
-        async function updatePosition(satelliteName) {
-            try {
-                // Use absolute URL instead of relative
-                const url = `${API_BASE_URL}/api/position/${encodeURIComponent(satelliteName)}`;
-                console.log(`Fetching position from: ${url}`);
-                
-                const response = await debugFetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log('Position data:', data);
-                
-                // Update position display
-                document.getElementById('satellite-name').textContent = data.satellite;
-                document.getElementById('latitude').textContent = `${data.latitude.toFixed(6)}°`;
-                document.getElementById('longitude').textContent = `${data.longitude.toFixed(6)}°`;
-                document.getElementById('altitude').textContent = `${data.altitude.toFixed(2)} km`;
-                document.getElementById('updated-time').textContent = new Date().toLocaleTimeString();
-                
-                // Show the position data section
-                document.getElementById('position-data').style.display = 'block';
-                
-                // Update map
-                updateMapMarker(data.latitude, data.longitude, data.satellite, data.altitude);
-                
-                // Update status
-                statusMessage.className = 'success';
-                statusMessage.textContent = `Successfully tracking ${data.satellite}`;
-            } catch (error) {
-                statusMessage.className = 'error';
-                statusMessage.textContent = `Error tracking satellite: ${error.message}`;
-                console.error('Error getting position:', error);
-            }
-        }
+        const data = await response.json();
+        console.log(`Received ${data.length} satellites:`, data);
         
-        // Update the map marker
-        function updateMapMarker(lat, lon, name, altitude) {
-            // Remove existing marker
-            if (satelliteMarker) {
-                map.removeLayer(satelliteMarker);
-            }
-            
-            // Create new marker and add to map
-            satelliteMarker = L.marker([lat, lon]).addTo(map);
-            
-            // Add popup with info
-            satelliteMarker.bindPopup(`
-                <b>${name}</b><br>
-                Latitude: ${lat.toFixed(6)}°<br>
-                Longitude: ${lon.toFixed(6)}°<br>
-                Altitude: ${altitude.toFixed(2)} km
-            `).openPopup();
-            
-            // Center map on satellite
-            map.setView([lat, lon], 3);
-        }
+        const select = document.getElementById('satellite-select');
+        select.innerHTML = '';
         
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Document loaded, initializing satellite tracker');
-            
-            // Load satellites when page loads
-            loadSatellites();
-            
-            // Set up track button
-            document.getElementById('track-button').addEventListener('click', trackSatellite);
+        // Add default option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select a satellite...';
+        select.appendChild(defaultOption);
+        
+        // Add all available satellites
+        data.forEach(sat => {
+            const option = document.createElement('option');
+            option.value = sat;
+            option.textContent = sat;
+            select.appendChild(option);
         });
-    </script>
+        
+        showStatusMessage('Satellite data loaded successfully!', 'success');
+        
+        // Reset button state
+        trackButton.disabled = false;
+        buttonText.textContent = 'Track Satellite';
+    } catch (error) {
+        showStatusMessage(`Error loading satellites: ${error.message}`, 'error');
+        console.error('Error loading satellites:', error);
+        
+        // Reset button state
+        trackButton.disabled = false;
+        buttonText.textContent = 'Try Again';
+    }
+}
+
+// Track the selected satellite
+async function trackSatellite() {
+    const satelliteName = document.getElementById('satellite-select').value;
+    
+    if (!satelliteName) {
+        showStatusMessage('Please select a satellite to track', 'error');
+        return;
+    }
+    
+    // Clear any previous interval
+    if (updateInterval) {
+        clearInterval(updateInterval);
+    }
+    
+    // Reset satellite path
+    satellitePath = [];
+    if (pathLine) {
+        map.removeLayer(pathLine);
+        pathLine = null;
+    }
+    
+    showStatusMessage(`Tracking ${satelliteName}...`, 'info');
+    
+    // Set loading state
+    trackButton.disabled = true;
+    buttonText.innerHTML = '<span class="loading"></span>Tracking...';
+    
+    // Get initial position
+    try {
+        await updatePosition(satelliteName);
+        
+        // Show live indicator
+        liveIndicator.style.display = 'block';
+        
+        // Update button state
+        trackButton.disabled = false;
+        buttonText.textContent = 'Tracking Active';
+        
+        // Update every 5 seconds
+        updateInterval = setInterval(() => {
+            updatePosition(satelliteName);
+        }, 5000);
+    } catch (error) {
+        // Reset button state
+        trackButton.disabled = false;
+        buttonText.textContent = 'Track Satellite';
+        showStatusMessage(`Error tracking satellite: ${error.message}`, 'error');
+    }
+}
+
+// Update the satellite position
+async function updatePosition(satelliteName) {
+    try {
+        // Use absolute URL instead of relative
+        const url = `${API_BASE_URL}/api/position/${encodeURIComponent(satelliteName)}`;
+        console.log(`Fetching position from: ${url}`);
+        
+        const response = await debugFetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Position data:', data);
+        
+        // Update position display with animation
+        const elements = {
+            'satellite-name': data.satellite,
+            'latitude': `${data.latitude.toFixed(6)}°`,
+            'longitude': `${data.longitude.toFixed(6)}°`,
+            'altitude': `${data.altitude.toFixed(2)} km`,
+            'updated-time': new Date().toLocaleTimeString()
+        };
+        
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element.textContent !== value) {
+                element.style.animation = 'none';
+                element.offsetHeight; // Trigger reflow
+                element.style.animation = 'fadeIn 0.5s ease';
+                element.textContent = value;
+            }
+        });
+        
+        // Show the position data section with animation if hidden
+        const positionData = document.getElementById('position-data');
+        if (positionData.style.display === 'none') {
+            positionData.style.display = 'block';
+            positionData.style.animation = 'fadeIn 0.5s ease';
+        }
+        
+        // Update map
+        updateMapMarker(data.latitude, data.longitude, data.satellite, data.altitude);
+        
+        // Update status
+        showStatusMessage(`Successfully tracking ${data.satellite}`, 'success');
+    } catch (error) {
+        showStatusMessage(`Error tracking satellite: ${error.message}`, 'error');
+        console.error('Error getting position:', error);
+        
+        // Hide live indicator
+        liveIndicator.style.display = 'none';
+        
+        // Clear interval
+        if (updateInterval) {
+            clearInterval(updateInterval);
+            updateInterval = null;
+        }
+    }
+}
+
+// Update the map marker and satellite path
+function updateMapMarker(lat, lon, name, altitude) {
+    // Add position to path
+    satellitePath.push([lat, lon]);
+    
+    // Limit path length
+    if (satellitePath.length > 50) {
+        satellitePath.shift();
+    }
+    
+    // Create satellite icon
+    const satelliteIcon = L.divIcon({
+        className: 'satellite-custom-icon',
+        html: `<div style="
+            width: 12px;
+            height: 12px;
+            background-color: ${satellite_color(altitude)};
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        "></div>`,
+        iconSize: [12, 12],
+        iconAnchor: [6, 6]
+    });
+    
+    // Remove existing marker
+    if (satelliteMarker) {
+        map.removeLayer(satelliteMarker);
+    }
+    
+    // Create new marker and add to map
+    satelliteMarker = L.marker([lat, lon], {icon: satelliteIcon}).addTo(map);
+    
+    // Add popup with info
+    satelliteMarker.bindPopup(`
+        <b>${name}</b><br>
+        Latitude: ${lat.toFixed(6)}°<br>
+        Longitude: ${lon.toFixed(6)}°<br>
+        Altitude: ${altitude.toFixed(2)} km
+    `);
+    
+    // Update path line
+    if (pathLine) {
+        map.removeLayer(pathLine);
+    }
+    
+    // Create path with gradient
+    pathLine = L.polyline(satellitePath, {
+        color: '#00b4d8',
+        weight: 3,
+        opacity: 0.7,
+        lineJoin: 'round'
+    }).addTo(map);
+    
+    // Add pulse animation to marker
+    // Center map on satellite with smooth animation
+    map.flyTo([lat, lon], map.getZoom() || 3, {
+        duration: 1.5,
+        easeLinearity: 0.5
+    });
+}
+
+// Get color based on altitude
+function satellite_color(altitude) {
+    // Color scale: red (low altitude) to blue (high altitude)
+    if (altitude < 200) return '#e63946'; // Red for low altitude
+    if (altitude < 500) return '#f1c40f'; // Yellow for medium altitude
+    if (altitude < 1000) return '#2ecc71'; // Green for high altitude
+    return '#00b4d8'; // Blue for very high altitude
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Document loaded, initializing satellite tracker');
+    
+    // Load satellites when page loads
+    loadSatellites();
+    
+    // Set up track button
+    trackButton.addEventListener('click', trackSatellite);
+    
+    // Resize map when window is resized
+    window.addEventListener('resize', function() {
+        if (map) {
+            map.invalidateSize();
+        }
+    });
+});
+</script>
 </body>
 </html>
